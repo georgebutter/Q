@@ -1,27 +1,28 @@
-
 const Q = function Q(configuration) {
-  const configuration = config || {};
+  const defaultConfig = {
+    success: null,
+    error: null,
+    method: 'GET',
+    url: '',
+    dataType: null,
+    data: null,
+  };
+  this.config = Object.assign(defaultConfig, configuration);
   this.queue = [];
   this.processing = false;
   this.add = this.add.bind(this);
   this.process = this.process.bind(this);
-  this.defaultSuccess = configuration.success || null;
-  this.defaultError = configuration.error || null;
 }
 
 Q.prototype.add = function addRequestToQueue(req) {
-  const request = {};
-  const defaultSuccess = this.defaultSuccess || function success(success) {
-    jQuery(document).trigger('q:requestCompleted', [success]);
+  const request = Object.assign({}, this.config, req);
+  const defaultSuccess = this.config.success || function success(success) {
+    jQuery(document).trigger('Q:requestCompleted', [success]);
   }
-  const defaultError = this.defaultError || function error(error) {
-    jQuery(document).trigger('q:requestFailed', [error]);
+  const defaultError = this.config.error || function error(error) {
+    jQuery(document).trigger('Q:requestFailed', [error]);
   }
-  request.url = req.url || '';
-  request.type = req.type || 'GET';
-  request.success = [req.success] || [defaultSuccess];
-  request.error = req.error || defaultError;
-
+  request.success = [request.success];
   this.queue.push(request);
 
   if (this.processing) {
@@ -29,9 +30,9 @@ Q.prototype.add = function addRequestToQueue(req) {
   }
 
   try {
-    jQuery(document).trigger('q:requestStarted');
+    jQuery(document).trigger('Q:requestStarted');
   } catch (error) {
-    console.error('Queue error:' + error );
+    console.error('Q:' + error);
   }
 
   this.processing = false;
@@ -43,7 +44,7 @@ Q.prototype.process = function processQueue(req) {
 
   if (!this.queue.length) {
     this.processing = false;
-    jQuery(document).trigger('q:requestsCompleted');
+    jQuery(document).trigger('Q:requestsCompleted');
     return true;
   }
   this.processing = true;
@@ -52,9 +53,8 @@ Q.prototype.process = function processQueue(req) {
   try {
     jQuery.ajax(request);
   } catch (error) {
-    console.error(error);
+    console.error('Q:' + error);
   }
 
   return request;
 }
-
