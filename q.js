@@ -44,12 +44,10 @@ Q.prototype.process = function processQueue(req) {
   if (!this.queue.length) {
     this.processing = false;
     jQuery(document).trigger('q:requestsCompleted');
-    console.log('requests completed')
     return true;
   }
   this.processing = true;
   const request = this.queue.shift();
-  // repeat the process
   request.success.push(this.process);
   try {
     jQuery.ajax(request);
