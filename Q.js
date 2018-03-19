@@ -1,5 +1,6 @@
 
 const Q = function Q(configuration) {
+  const configuration = config || {};
   this.queue = [];
   this.processing = false;
   this.add = this.add.bind(this);
@@ -9,7 +10,6 @@ const Q = function Q(configuration) {
 }
 
 Q.prototype.add = function addRequestToQueue(req) {
-  console.log(req)
   const request = {};
   const defaultSuccess = this.defaultSuccess || function success(success) {
     jQuery(document).trigger('q:requestCompleted', [success]);
