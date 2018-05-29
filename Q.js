@@ -1,3 +1,8 @@
+/*
+  Q - https://github.com/ButsAndCats/Q
+  Version: 0.0.3
+  License: MIT
+*/
 const Q = function Q(configuration) {
   const defaultConfig = {
     success: null,
