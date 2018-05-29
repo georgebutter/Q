@@ -23,6 +23,7 @@ Q.prototype.add = function addRequestToQueue(req) {
     jQuery(document).trigger('Q:requestFailed', [error]);
   }
   request.success = [request.success];
+  request.error = [request.error];
   this.queue.push(request);
 
   if (this.processing) {
@@ -50,6 +51,7 @@ Q.prototype.process = function processQueue() {
   this.processing = true;
   const request = this.queue.shift();
   request.success.push(this.process);
+  request.error.push(this.process);
   try {
     jQuery.ajax(request);
   } catch (error) {
