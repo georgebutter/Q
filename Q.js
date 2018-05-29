@@ -40,7 +40,7 @@ Q.prototype.add = function addRequestToQueue(req) {
   return this.processing;
 }
 
-Q.prototype.process = function processQueue(req) {
+Q.prototype.process = function processQueue() {
 
   if (!this.queue.length) {
     this.processing = false;
