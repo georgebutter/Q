@@ -1,5 +1,5 @@
 {
-  "name": "ajax-q",
+  "name": "@butsandcats/ajax-queue",
   "version": "0.0.0",
   "license": "ISC",
   "author": "George Butter",
