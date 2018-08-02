@@ -9,7 +9,7 @@ const Q = function Q (configuration) {
     error: null,
     method: 'GET',
     url: '',
-    dataType: 'json',
+    dataType: '',
     data: null
   }
   this.config = Object.assign(defaultConfig, configuration)
@@ -68,17 +68,22 @@ Q.prototype.process = function processQueue () {
     this.request = new XMLHttpRequest()
     // Setup the success and error callbacks
     this.request.onreadystatechange = function requestStateChanged () {
-      if (this.request.readyState === 4 && this.request.status === 200) {
-        // The response is a success
-        // Execute all functions in the success array
-        for (let func = 0; func < request.success.length; func += 1) {
-          request.success[func](this.request.response)
-        }
-      } else {
-        // The response is an error
-        // Execute all functions in the error array
-        for (let func = 0; func < request.error.length; func += 1) {
-          request.error[func](this.request.response)
+      // If the request is completed
+      if (this.readyState === 4) {
+        // If the status code is okay
+        console.log(this.status)
+        if (this.status === 200) {
+          // The response is a success
+          // Execute all functions in the success array
+          for (let func = 0; func < request.success.length; func += 1) {
+            request.success[func](this.response)
+          }
+        } else {
+          // The response is an error
+          // Execute all functions in the error array
+          for (let func = 0; func < request.error.length; func += 1) {
+            request.error[func](this.response)
+          }
         }
       }
     }
@@ -92,7 +97,12 @@ Q.prototype.process = function processQueue () {
   // Define the response type, the default being json
   this.request.responseType = request.dataType
   // Send the request
-  this.request.send()
+  if(typeof request.data === 'object') {
+    this.request.setRequestHeader("Content-Type", "application/json")
+    this.request.send(JSON.stringify(request.data))
+    return request
+  }
+  this.request.send(request.data)
   return request
 }
 
