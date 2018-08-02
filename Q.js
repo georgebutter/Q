@@ -21,7 +21,7 @@ const Q = function Q (configuration) {
     completedRequestEvent: 'Q:requestCompleted',
     failedRequestEvent: 'Q:requestFailed',
     requestStartedEvent: 'Q:requestStarted',
-    errorEvent: 'Q:error',
+    errorEvent: 'Q:error'
   }
   this.config = Object.assign(defaultConfig, configuration)
   this.queue = []
@@ -32,7 +32,7 @@ const Q = function Q (configuration) {
 
 Q.prototype.add = function addRequestToQueue (req) {
   const request = Object.assign({}, this.config, req)
-  if(!request.url) {
+  if (!request.url) {
     const errorEvent = new CustomEvent(this.config.errorEvent, { response: 'Q: No url provided' })
     document.dispatchEvent(errorEvent)
   }
