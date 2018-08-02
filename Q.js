@@ -10,7 +10,12 @@ const Q = function Q (configuration) {
     method: 'GET',
     url: '',
     dataType: '',
-    data: null
+    data: null,
+    completedAllRequestsEvent: 'Q:requestsCompleted',
+    completedRequestEvent: 'Q:requestCompleted',
+    failedRequestEvent: 'Q:requestFailed',
+    requestStartedEvent: 'Q:requestStarted',
+    errorEvent: 'Q:error'
   }
   this.config = Object.assign(defaultConfig, configuration)
   this.queue = []
@@ -22,28 +27,28 @@ const Q = function Q (configuration) {
 Q.prototype.add = function addRequestToQueue (req) {
   const request = Object.assign({}, this.config, req)
   const defaultSuccess = this.config.success || function success (success) {
-    const successEvent = new CustomEvent('Q:requestCompleted', { response: success })
+    const successEvent = new CustomEvent(this.config.completedRequestEvent, { response: success })
     document.dispatchEvent(successEvent)
   }
   const defaultError = this.config.error || function error (error) {
-    const errorEvent = new CustomEvent('Q:requestFailed', { response: error })
+    const errorEvent = new CustomEvent(this.config.failedRequestEvent, { response: error })
     document.dispatchEvent(errorEvent)
   }
   request.success = [request.success] || [defaultSuccess]
   request.error = [request.error] || [defaultError]
   this.queue.push(request)
 
+  // Check to see if the queue is already running
   if (this.processing) {
     return true
   }
 
   try {
-    const startedEvent = new Event('Q:requestStarted')
+    const startedEvent = new Event(this.config.requestStarted)
     document.dispatchEvent(startedEvent)
   } catch (error) {
-    const errorEvent = new CustomEvent('Q:error', { response: error })
+    const errorEvent = new CustomEvent(this.config.errorEvent, { response: error })
     document.dispatchEvent(errorEvent)
-    console.error('Q:' + error)
   }
 
   this.processing = false
@@ -54,7 +59,7 @@ Q.prototype.add = function addRequestToQueue (req) {
 Q.prototype.process = function processQueue () {
   if (!this.queue.length) {
     this.processing = false
-    const completedEvent = new Event('Q:requestsCompleted')
+    const completedEvent = new Event(this.config.completedAllRequestsEvent)
     document.dispatchEvent(completedEvent)
     return
   }
@@ -71,7 +76,6 @@ Q.prototype.process = function processQueue () {
       // If the request is completed
       if (this.readyState === 4) {
         // If the status code is okay
-        console.log(this.status)
         if (this.status === 200) {
           // The response is a success
           // Execute all functions in the success array
@@ -88,17 +92,16 @@ Q.prototype.process = function processQueue () {
       }
     }
   } catch (error) {
-    const errorEvent = new CustomEvent('Q:error', { response: error })
+    const errorEvent = new CustomEvent(this.config.errorEvent, { response: error })
     document.dispatchEvent(errorEvent)
-    console.error('Q:' + error)
   }
   // Open the request with the currect url and method
   this.request.open(request.method, request.url)
   // Define the response type, the default being json
   this.request.responseType = request.dataType
   // Send the request
-  if(typeof request.data === 'object') {
-    this.request.setRequestHeader("Content-Type", "application/json")
+  if (typeof request.data === 'object') {
+    this.request.setRequestHeader('Content-Type', 'application/json')
     this.request.send(JSON.stringify(request.data))
     return request
   }
