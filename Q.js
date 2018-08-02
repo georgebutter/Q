@@ -5,17 +5,23 @@
 const Q = function Q (configuration) {
   // Deafult settings
   const defaultConfig = {
-    success: null,
-    error: null,
     method: 'GET',
-    url: '',
+    url: null,
     dataType: '',
     data: null,
+    success: function success (success) {
+      const successEvent = new CustomEvent(this.config.completedRequestEvent, { response: success })
+      document.dispatchEvent(successEvent)
+    },
+    error: function error (error) {
+      const errorEvent = new CustomEvent(this.config.failedRequestEvent, { response: error })
+      document.dispatchEvent(errorEvent)
+    },
     completedAllRequestsEvent: 'Q:requestsCompleted',
     completedRequestEvent: 'Q:requestCompleted',
     failedRequestEvent: 'Q:requestFailed',
     requestStartedEvent: 'Q:requestStarted',
-    errorEvent: 'Q:error'
+    errorEvent: 'Q:error',
   }
   this.config = Object.assign(defaultConfig, configuration)
   this.queue = []
@@ -26,14 +32,12 @@ const Q = function Q (configuration) {
 
 Q.prototype.add = function addRequestToQueue (req) {
   const request = Object.assign({}, this.config, req)
-  const defaultSuccess = this.config.success || function success (success) {
-    const successEvent = new CustomEvent(this.config.completedRequestEvent, { response: success })
-    document.dispatchEvent(successEvent)
-  }
-  const defaultError = this.config.error || function error (error) {
-    const errorEvent = new CustomEvent(this.config.failedRequestEvent, { response: error })
+  if(!request.url) {
+    const errorEvent = new CustomEvent(this.config.errorEvent, { response: 'Q: No url provided' })
     document.dispatchEvent(errorEvent)
   }
+  const defaultSuccess = this.config.success
+  const defaultError = this.config.error
   request.success = [request.success] || [defaultSuccess]
   request.error = [request.error] || [defaultError]
   this.queue.push(request)
