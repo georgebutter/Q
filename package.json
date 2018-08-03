@@ -4,7 +4,13 @@
   "license": "ISC",
   "author": "George Butter",
   "description": "Front end ajax queue and request handler",
-  "main": "Q.js",
+  "browser": "Q.js",
+  "bugs": { "url" : "https://github.com/ButsAndCats/Q/issues" },
+  "homepage": "https://github.com/ButsAndCats/Q#readme",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/ButsAndCats/Q.git"
+  },
   "keywords": [
     "Ajax",
     "Queue"

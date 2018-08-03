@@ -1,8 +1,11 @@
 /*
-  Version: 0.0.0
+  Version: 0.0.3
+  Author: George Butter
+  https://github.com/ButsAndCats/Q
   License: MIT
 */
 const Q = function Q (configuration) {
+  this.version = '0.0.3'
   // Deafult settings
   const defaultConfig = {
     method: 'GET',
