@@ -1,25 +1,17 @@
 /*
-  Version: 0.0.3
+  Version: 0.0.4
   Author: George Butter
   https://github.com/ButsAndCats/Q
   License: MIT
 */
 const Q = function Q (configuration) {
-  this.version = '0.0.3'
+  this.version = '0.0.4'
   // Deafult settings
   const defaultConfig = {
     method: 'GET',
     url: null,
     dataType: '',
     data: null,
-    success: function success (success) {
-      const successEvent = new CustomEvent(this.config.completedRequestEvent, { response: success })
-      document.dispatchEvent(successEvent)
-    },
-    error: function error (error) {
-      const errorEvent = new CustomEvent(this.config.failedRequestEvent, { response: error })
-      document.dispatchEvent(errorEvent)
-    },
     completedAllRequestsEvent: 'Q:requestsCompleted',
     completedRequestEvent: 'Q:requestCompleted',
     failedRequestEvent: 'Q:requestFailed',
@@ -27,6 +19,14 @@ const Q = function Q (configuration) {
     errorEvent: 'Q:error'
   }
   this.config = Object.assign(defaultConfig, configuration)
+  this.config.success = this.config.success || function success (success) {
+    const successEvent = new CustomEvent(this.config.completedRequestEvent, { response: success })
+    document.dispatchEvent(successEvent)
+  }.bind(this)
+  this.config.error = this.config.error || function error (error) {
+    const errorEvent = new CustomEvent(this.config.failedRequestEvent, { response: error })
+    document.dispatchEvent(errorEvent)
+  }.bind(this)
   this.queue = []
   this.processing = false
   this.add = this.add.bind(this)

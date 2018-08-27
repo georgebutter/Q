@@ -1,6 +1,6 @@
 {
   "name": "@butsandcats/ajax-queue",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "ISC",
   "author": "George Butter",
   "description": "Front end ajax queue and request handler",
