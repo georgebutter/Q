@@ -1,8 +1,6 @@
 /*
   Version: 0.0.4
-  Author: George Butter
-  https://github.com/ButsAndCats/Q
-  License: MIT
+  Author: DotDev
 */
 const Q = function Q (configuration) {
   this.version = '0.0.4'
@@ -116,4 +114,4 @@ Q.prototype.process = function processQueue () {
   return request
 }
 
-export {Q}
+export default Q
